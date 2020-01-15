@@ -1,85 +1,78 @@
+<!doctype html>
+<html lang="en">
 <head>
     <link rel="stylesheet" type="text/css" href="styles.css">
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+  <title>Test chat!</title>
 </head>
-<html>
+
+
 <body>
-<div id="header">
-    <form method="POST" id="nameform" action="javascript:void(null);" onsubmit="login()">
-        <input id="name" name="name" value="" style="font-size:medium" type="text">
-        <input value="Login" style="font-size:large" type="submit">
-    </form>
+
+<div class="container">
+    <h1> Test chat</h1>
+    <div class="row">
+        <!-- Content here -->
+        <div class="col-md-3"></div>
+        <div  class="col-md-6">
+            <form method="POST" id="nameform" action="javascript:void(null);" onsubmit="login()">
+                <div class="form-row">
+                   <div class="form-group col-md-8">
+<!--                       <label for="name">Enter you name</label>-->
+                       <input type="text" class="form-control" id="name" name="name"  value="" aria-describedby="nameHelp">
+                       <small id="nameHelp" class="form-text text-muted">Please, enter you name</small>
+                   </div>
+                   <div class="form-group col-md-2">
+                         <button type="button" class="btn btn-primary" onclick="login()">Login</button>
+                   </div>
+                   <div class="form-group col-md-2">
+                       <button type="button" class="btn btn-primary"  onclick="logout()">Logout</button>
+                   </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-3"></div>
+    </div>
+
+    <div class="row ">
+        <div class="col-md-8 message-list border">
+            <div class="col-md-12">
+                <form method="POST" id="msgform" action="javascript:void(null);" onsubmit="say()">
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <input type="text" id="msg" name="msg" class="form-control msginput" value="" style="font-size:medium">
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary sendbutton" >Send message</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-12">
+                <div id="history" class="chat form"></div>
+            </div>
+        </div>
+        <div class="col-md-4  border" id="user-online"></div>
+    </div>
+
+
 </div>
-<div id="body">
-    <div id="history" class="chat form"></div>
-</div>
-<div id="footer">
-    <form method="POST" id="msgform" action="javascript:void(null);" onsubmit="say()">
-        <input id="msg" name="msg" class="msginput" value="" style="font-size:medium" type="text">
-        <input value="Send" class="sendbutton" style="font-size:large" type="submit">
-    </form>
-</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 </body>
 </html>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script>
-    var host = "localhost";
-    var port = 8080;
-
-
-    function loadHistory() {
-        var settings = {
-            "crossDomain": true,
-            "url": "http://" + host + ":" + port + "/chat/chat",
-            "method": "GET",
-        }
-
-        $.ajax(settings).done(function (response) {
-            $("#history").html(response.replace(/\n/g, "<br />"))
-            $("#history").scrollTop($("#history")[0].scrollHeight);
-        }).fail(function (jqXHR, textStatus) {
-            console.log(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
-        });
-    }
-
-    function say() {
-        var msg = $('#msgform').serialize();
-        var name = $('#nameform').serialize();
-
-        var settings = {
-            "method": "POST",
-            "crossDomain": true,
-            "url": "http://" + host + ":" + port + "/chat/say",
-            "data": name + "&" + msg
-        };
-
-        $.ajax(settings).done(function (response) {
-            $('#msgform').trigger("reset");
-            loadHistory();
-        }).fail(function (jqXHR, textStatus) {
-            alert(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
-            console.log(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
-        });
-    }
-
-    function login() {
-        var name = $('#nameform').serialize();
-
-        var settings = {
-            "method": "POST",
-            "crossDomain": true,
-            "url": "http://" + host + ":" + port + "/chat/login",
-            "data": name
-        };
-
-        $.ajax(settings).done(function (response) {
-            loadHistory();
-        }).fail(function (jqXHR, textStatus) {
-            alert(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
-            console.log(jqXHR.status + " " + jqXHR.statusText + ". " + jqXHR.responseText);
-        });
-    }
-
+<script src="lib.js"></script>
+<script type="text/javascript">
     loadHistory();
+    getUserOnline();
     setInterval(loadHistory, 10000);
 </script>
